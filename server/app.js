@@ -45,7 +45,12 @@ app.get("/api", (req, res) => {
 
 app.use("/admin", AdminRouter);
 app.use("/user", UsersRouter);
+app.use("/auth", AuthRouter);
 
+app.get("/session", (req, res) => {
+    console.log(req.session);
+    console.log(req.session.userInfo);
+})
 
 app.use(express.static('public'));
 app.use(express.static('views'));
@@ -53,18 +58,6 @@ app.use(express.static('views'));
 mongoose.connect("mongodb://localhost:27017/ChiThaoDB", { useNewUrlParser: true }, (err) => {
     if (err) console.log(err)
     else console.log("Mongodb is connecting!");
-});
-
-app.get('/', (req, res) => {
-    res.render('home');
-});
-
-app.get('/login', (req, res) => {
-    res.render('login');
-});
-
-app.get('/register', (req, res) => {
-    res.render('register');
 });
 
 const port = 1996;

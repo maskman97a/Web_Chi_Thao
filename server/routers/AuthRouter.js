@@ -27,6 +27,7 @@ router.post("/login", async (req, res) => {
     } catch (error) {
         res.status(500).json({ success: 0, error })
     }
+    console.log(req.session.userInfo);
 });
 
 router.delete("/logout", (req, res) => {

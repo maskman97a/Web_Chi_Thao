@@ -5,27 +5,23 @@ const bcrypt = require('bcrypt-nodejs');
 const UserModel = require('../models/UsersModel');
 
 router.post("/create", async (req, res) => {
-    const { username, password, fullname, repassword } = req.body;
+    const { username, password, fullname } = req.body;
     const roleId = 0;
     try {
-        if (password == repassword) {
-            let userFound = await UserModel.findOne({ username });
-            if (!userFound) {
-                const hashPassword = bcrypt.hashSync(password, bcrypt.genSaltSync());
-                UserModel.create({ username, hashPassword, fullname, roleId }, (err, userCreated) => {
-                    if (err) res.status(500).json({ success: 0, message: err })
-                    else res.status(201).json({ success: 1, user: userCreated });
-                    req.session.userInfo = {
-                        username: userCreated.username,
-                        fullname: userCreated.fullname,
-                        roleId: userCreated.roleId
-                    }
-                });
-            } else {
-                res.json({ success: 0, message: "exists" });
-            }
+        let userFound = await UserModel.findOne({ username });
+        if (!userFound) {
+            const hashPassword = bcrypt.hashSync(password, bcrypt.genSaltSync());
+            UserModel.create({ username, hashPassword, fullname, roleId }, (err, userCreated) => {
+                if (err) res.status(500).json({ success: 0, message: err })
+                else res.status(201).json({ success: 1, user: userCreated });
+                req.session.userInfo = {
+                    username: userCreated.username,
+                    fullname: userCreated.fullname,
+                    roleId: userCreated.roleId
+                }
+            });
         } else {
-            res.json({ success: 0, message: "Your password is not synchronized" })
+            res.json({ success: 0, message: "exists" });
         }
     } catch (err) {
         res.status(500).json({ success: 0, message: err });
@@ -49,7 +45,7 @@ router.use((req, res, next) => {
         next();
     } else res.status(401).json({ success: 0, message: "Permission denied!" });
 });
-// "/api/users" => get all
+
 router.get("/", (req, res, next) => {
     const { userInfo } = req.session;
     if (userInfo && userInfo.name == "Huy") {
